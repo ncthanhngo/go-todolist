@@ -45,6 +45,8 @@ type TodoItemUpdate struct {
 	Status      *string `json:"status" gorm:"column:status;"`
 }
 
+//
+
 func (TodoItemUpdate) TableName() string {
 	return TodoItem{}.TableName()
 
