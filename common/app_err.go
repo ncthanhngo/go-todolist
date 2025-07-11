@@ -71,6 +71,7 @@ func NewCustomError(root error, msg, key string) *AppError {
 	}
 	return NewErrorResponse(errors.New(msg), msg, msg, key)
 }
+
 // Ham tien ich
 func ErrEntityExisted(entity string, err error) *AppError {
 	return NewCustomError(
@@ -118,8 +119,14 @@ func ErrCanNotListEntity(entity string, err error) *AppError {
 		fmt.Sprintf("Can not List %s", strings.ToLower(entity)),
 		fmt.Sprintf("ErrCanNotList%s", entity))
 }
+func ErrCanNotGetEntity(entity string, err error) *AppError {
+	return NewCustomError(
+		err,
+		fmt.Sprintf("Can not get %s", strings.ToLower(entity)),
+		fmt.Sprintf("ErrCanNoGet%s", entity))
+}
 
-func ErrCanDeleteEntity(entity string, err error) *AppError {
+func ErrCanNotDeleteEntity(entity string, err error) *AppError {
 	return NewCustomError(
 		err,
 		fmt.Sprintf("Can not Delete %s", strings.ToLower(entity)),
@@ -133,4 +140,4 @@ func ErrCanNotUpdateEntity(entity string, err error) *AppError {
 		fmt.Sprintf("ErrCanNotUpdate%s", entity))
 }
 
-var RecordNotFound = errors.New("Record not found")
+var RecordNotFound = errors.New("Record not found") // for unit test
