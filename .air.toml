@@ -1,0 +1,25 @@
+# ==== CẤU HÌNH CHUNG ====
+root = "."
+tmp_dir = "tmp"
+
+# ==== BUILD ====
+[build]
+  cmd = "go build -o ./tmp/main ./main.go"  # 🔧 Build chỉ file main.go
+  bin = "tmp/main"
+  exclude_dir = ["vendor", "tmp"]
+  include_ext = ["go", "tpl", "tmpl", "html"]
+  exclude_file = []
+  delay = 1000
+  kill_delay = 500
+
+# ==== LOG ====
+[log]
+  time = true
+  color = true
+  level = "debug"
+
+# ==== RUN ====
+[run]
+  cmd = ""
+  watch_dir = "."
+  watch_exclude = ["tmp", "vendor"]
