@@ -30,7 +30,7 @@ func (s *ListItemBiz) ListItem(
 ) ([]model.TodoItem, error) {
 	data, err := s.store.ListItem(ctx, filter, paging)
 	if err != nil {
-		return nil, err
+		return nil, common.ErrCanNotListEntity(model.EntityName, err)
 	}
 	return data, nil
 

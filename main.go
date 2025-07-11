@@ -6,6 +6,8 @@ import (
 	"github.com/joho/godotenv"
 	"os"
 	"todolist/db"
+	"todolist/middleware"
+	"todolist/module/item/upload"
 
 	//"gorm.io/driver/mysql"
 	//"gorm.io/gorm"
@@ -28,11 +30,14 @@ func main() {
 
 	// Chay Gin Framework
 	r := gin.Default()
+	r.Use(middleware.Recover()) //middleware se tac dong toi toan bo API ben duoi
+	r.Static("/static", "./static")
 	v1 := r.Group("v1")
 
 	//Khoi {} phia duoi la khoi tu do, gioi han va tao su de nhin
 	//Khai bao dang ky cho 5 API
 	{
+		v1.PUT("/upload", upload.Upload(db))
 		items := v1.Group("/items")
 		{
 			items.POST("", ginitem.CreateItem(db)) // ginitem la sua package trong handler tranh trung voi gin

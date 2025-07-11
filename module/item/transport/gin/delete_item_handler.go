@@ -26,9 +26,7 @@ func DeleteItemByID(db *gorm.DB) func(ctx *gin.Context) {
 		store := storage.NewSQLStore(db)
 		business := biz.NewDeleteItemBiz(store)
 		if err := business.DeleteItem(c.Request.Context(), id); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
+			c.JSON(http.StatusBadRequest, err)
 			return
 		}
 		c.JSON(http.StatusOK, common.SimpleSuccessResponse(true))
