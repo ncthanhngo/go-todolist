@@ -7,7 +7,8 @@ import (
 	"os"
 	"todolist/db"
 	"todolist/middleware"
-	"todolist/module/item/upload"
+	"todolist/module/upload/storage"
+	"todolist/module/upload/transport"
 
 	//"gorm.io/driver/mysql"
 	//"gorm.io/gorm"
@@ -33,11 +34,17 @@ func main() {
 	r.Use(middleware.Recover()) //middleware se tac dong toi toan bo API ben duoi
 	r.Static("/static", "./static")
 	v1 := r.Group("v1")
+	//s3
+	//r.PUT("/upload", upload.UploadFile)
+	//s3 Clean
+	// Cấu hình AWS S3
 
+	r.PUT("/upload", transport.UploadFileHandler)
 	//Khoi {} phia duoi la khoi tu do, gioi han va tao su de nhin
 	//Khai bao dang ky cho 5 API
 	{
-		v1.PUT("/upload", upload.Upload(db))
+
+		//v1.PUT("/upload", upload.Upload(db))
 		items := v1.Group("/items")
 		{
 			items.POST("", ginitem.CreateItem(db)) // ginitem la sua package trong handler tranh trung voi gin
