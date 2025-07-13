@@ -5,6 +5,7 @@ import (
 	"todolist/common"
 )
 
+// ????
 func (s *sqlStore) CreateUser(ctx context.Context, data usermodel.UserCreate) error {
 	db := s.db.Begin()
 	data.PrepareForInsert()
