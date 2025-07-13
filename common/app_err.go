@@ -139,5 +139,11 @@ func ErrCanNotUpdateEntity(entity string, err error) *AppError {
 		fmt.Sprintf("Can not Update %s", strings.ToLower(entity)),
 		fmt.Sprintf("ErrCanNotUpdate%s", entity))
 }
+func ErrCanNotGeneratePassword(password string, err error) *AppError {
+	return NewCustomError(
+		err,
+		fmt.Sprintf("Can not generate password %s", strings.ToLower(password)),
+		fmt.Sprintf("ErrCanNotGeneratePassword%s", password))
+}
 
 var RecordNotFound = errors.New("Record not found") // for unit test

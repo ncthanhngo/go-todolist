@@ -7,8 +7,7 @@ import (
 	"os"
 	"todolist/db"
 	"todolist/middleware"
-	"todolist/module/upload/storage"
-	"todolist/module/upload/transport"
+	ginuser "todolist/module/user/transport/gin"
 
 	//"gorm.io/driver/mysql"
 	//"gorm.io/gorm"
@@ -39,11 +38,11 @@ func main() {
 	//s3 Clean
 	// Cấu hình AWS S3
 
-	r.PUT("/upload", transport.UploadFileHandler)
+	//r.PUT("/upload", transport.UploadFileHandler)
 	//Khoi {} phia duoi la khoi tu do, gioi han va tao su de nhin
 	//Khai bao dang ky cho 5 API
 	{
-
+		v1.POST("/register", ginuser.Register(db))
 		//v1.PUT("/upload", upload.Upload(db))
 		items := v1.Group("/items")
 		{
