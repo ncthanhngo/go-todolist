@@ -6,7 +6,6 @@ import (
 	"todolist/module/user/model"
 )
 
-// ?
 func (s *sqlStore) CreateUser(ctx context.Context, data *model.UserCreate) error {
 	db := s.db.Begin()
 	//data.PrepareForInsert()  for transaction
