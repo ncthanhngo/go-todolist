@@ -1,6 +1,9 @@
 package model
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 const EntityName = "User"
 
@@ -25,10 +28,12 @@ func (role UserRole) String() string {
 		return "user"
 	}
 }
+
+// 2 Ham scan va value dung de thao tac voi DB
 func (role *UserRole) Scan(value interface{}) error {
 	bytes, ok := value.([]byte)
 	if !ok {
-		return errors.New("Faile to unmarshal JSON value", value)
+		return errors.New(fmt.Sprintf("Faile to unmarshal JSON value: %s", value))
 	}
 	var r UserRole
 	roleValue := string(bytes)
@@ -40,3 +45,5 @@ func (role *UserRole) Scan(value interface{}) error {
 	*role = r
 	return nil
 }
+
+//
