@@ -13,8 +13,9 @@ type jwtProvider struct {
 	secret string
 }
 
-func NewTokenJWTProvider(prefix string) *jwtProvider {
-	return &jwtProvider{prefix: prefix}
+func NewTokenJWTProvider(prefix string, secret string) *jwtProvider {
+	return &jwtProvider{prefix: prefix,
+		secret: secret}
 }
 
 type myClaim struct {
@@ -62,7 +63,7 @@ func (j *jwtProvider) Generate(data tokenprovider.TokenPayload, expiry int) (tok
 	}, nil
 }
 
-func (j *jwtProvider) Validate(myToken string) (tokenprovider.Token, error) {
+func (j *jwtProvider) Validate(myToken string) (tokenprovider.TokenPayload, error) {
 	res, err := jwt.ParseWithClaims(myToken, &myClaim{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(j.secret), nil
 	})
@@ -77,10 +78,5 @@ func (j *jwtProvider) Validate(myToken string) (tokenprovider.Token, error) {
 	if !ok {
 		return nil, tokenprovider.ErrInvalidToken
 	}
-	// Create and return a token struct instead of returning claims.PayLoad directly
-	return &token{
-		Token:   myToken,
-		Created: claims.IssuedAt.Time,
-		Expiry:  int(claims.ExpiresAt.Time.Sub(claims.IssuedAt.Time).Seconds()),
-	}, nil
+	return &claims.PayLoad, nil
 }

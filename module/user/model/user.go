@@ -33,22 +33,26 @@ func (role UserRole) String() string {
 
 // 2 Ham scan va value dung de thao tac voi DB
 func (role *UserRole) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return errors.New(fmt.Sprintf("Faile to unmarshal JSON value: %s", value))
+	switch v := value.(type) {
+	case int64:
+		*role = UserRole(v)
+	case []byte:
+		str := string(v)
+		switch str {
+		case "user":
+			*role = RoleUser
+		case "admin":
+			*role = RoleAdmin
+		case "shipper":
+			*role = RoleShipper
+		case "mod":
+			*role = RoleMod
+		default:
+			*role = RoleUser
+		}
+	default:
+		return errors.New(fmt.Sprintf("Failed to scan UserRole: unexpected type %T", value))
 	}
-	var r UserRole
-	roleValue := string(bytes)
-	if roleValue == "user" {
-		r = RoleUser
-	} else if roleValue == "admin" {
-		r = RoleAdmin
-	} else if roleValue == "shipper" {
-		r = RoleShipper
-	} else if roleValue == "mod" {
-		r = RoleMod
-	}
-	*role = r
 	return nil
 }
 
@@ -61,13 +65,13 @@ func (role *UserRole) Value() (driver.Value, error) {
 
 type User struct {
 	common.SQLModel
-	Email     string   `json:"email" gorm:"column:email;"`
-	Password  string   `json:"password" gorm:"column:password;"`
-	Salt      string   `json:"_" gorm:"column:salt;"`
-	LastName  string   `json:"last_name" gorm:"column:last_name;"`
-	FirstName string   `json:"first_name" gorm:"column:first_name;"`
-	Phone     string   `json:"phone" gorm:"column:phone;"`
-	Role      UserRole `json:"role" gorm:"column:role;"`
+	Email     string    `json:"email" gorm:"column:email;"`
+	Password  string    `json:"password" gorm:"column:password;"`
+	Salt      string    `json:"_" gorm:"column:salt;"`
+	LastName  string    `json:"last_name" gorm:"column:last_name;"`
+	FirstName string    `json:"first_name" gorm:"column:first_name;"`
+	Phone     string    `json:"phone" gorm:"column:phone;"`
+	Role      *UserRole `json:"role" gorm:"column:role;"`
 }
 
 func (role *UserRole) MarshalJSON() ([]byte, error) {
@@ -89,12 +93,12 @@ func (User) TableName() string { // User se tro toi bang users trong database
 
 type UserCreate struct {
 	common.SQLModel `json:",inline"`
-	Email           string   `json:"email" gorm:"column:email;"`
-	Password        string   `json:"password" gorm:"column:password;"`
-	Salt            string   `json:"_" gorm:"column:salt;"`
-	LastName        string   `json:"last_name" gorm:"column:last_name;"`
-	FirstName       string   `json:"first_name" gorm:"column:first_name;"`
-	Role            UserRole `json:"_" gorm:"column:role;"` //Role va salt khong cho truyen tu ngoai vao "_"
+	Email           string    `json:"email" gorm:"column:email;"`
+	Password        string    `json:"password" gorm:"column:password;"`
+	Salt            string    `json:"_" gorm:"column:salt;"`
+	LastName        string    `json:"last_name" gorm:"column:last_name;"`
+	FirstName       string    `json:"first_name" gorm:"column:first_name;"`
+	Role            *UserRole `json:"_" gorm:"column:role;"` //Role va salt khong cho truyen tu ngoai vao "_"
 }
 
 func (UserCreate) TableName() string {

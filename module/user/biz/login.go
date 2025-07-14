@@ -39,10 +39,10 @@ func (business *LoginBisiness) Login(ctx context.Context, data *model.UserLogin)
 		}
 		return nil, common.ErrDB(err)
 	}
-	passHashed := business.hasher.Hash(data.Password + user.Salt)
-	if user.Password != passHashed {
+	if !business.hasher.Compare(user.Password, data.Password+user.Salt) {
 		return nil, model.ErrEmailOrPasswordInvalid
 	}
+
 	payload := &common.TokenPayload{
 		UId:   user.Id,
 		URole: user.Role.String(),

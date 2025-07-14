@@ -43,6 +43,7 @@ func main() {
 	//Khai bao dang ky cho 5 API
 	{
 		v1.POST("/register", ginuser.Register(db))
+		v1.POST("/login", ginuser.Login(db))
 		//v1.PUT("/upload", upload.Upload(db))
 		items := v1.Group("/items")
 		{

@@ -10,9 +10,15 @@ type RegisterStorage interface {
 	FindUser(ctx context.Context, cond map[string]interface{}, moreInfo ...string) (*model.User, error)
 	CreateUser(ctx context.Context, data *model.UserCreate) error
 }
-type Hasher interface { //>> tao chuoi salt cho moi user la khac nhau
+
+// type Hasher interface { //>> tao chuoi salt cho moi user la khac nhau
+//
+//	Hash(data string) string
+type Hasher interface {
 	Hash(data string) string
+	Compare(hashedData, plainData string) bool
 }
+
 type registerBusiness struct {
 	registerStorage RegisterStorage
 	hasher          Hasher
@@ -37,7 +43,8 @@ func (business *registerBusiness) Register(ctx context.Context, data *model.User
 	salt := common.GenSalt(50)
 	data.Password = business.hasher.Hash(data.Password + salt)
 	data.Salt = salt
-	data.Role = model.RoleUser //hard code luc moi dang ky se luon la user
+	role := model.RoleUser //Default user role
+	data.Role = &role
 
 	if err := business.registerStorage.CreateUser(ctx, data); err != nil {
 		return common.ErrCanNotCreateEntity(model.EntityName, err)
