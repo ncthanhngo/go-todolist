@@ -50,6 +50,19 @@ func (role *UserRole) Scan(value interface{}) error {
 		default:
 			*role = RoleUser
 		}
+	case string:
+		switch v {
+		case "user":
+			*role = RoleUser
+		case "admin":
+			*role = RoleAdmin
+		case "shipper":
+			*role = RoleShipper
+		case "mod":
+			*role = RoleMod
+		default:
+			*role = RoleUser
+		}
 	default:
 		return errors.New(fmt.Sprintf("Failed to scan UserRole: unexpected type %T", value))
 	}
@@ -72,6 +85,7 @@ type User struct {
 	FirstName string    `json:"first_name" gorm:"column:first_name;"`
 	Phone     string    `json:"phone" gorm:"column:phone;"`
 	Role      *UserRole `json:"role" gorm:"column:role;"`
+	Status    int       `json:"status" gorm:"column:status;"`
 }
 
 func (role *UserRole) MarshalJSON() ([]byte, error) {
@@ -81,10 +95,10 @@ func (role *UserRole) MarshalJSON() ([]byte, error) {
 func (u *User) GetUserId() int {
 	return u.Id
 }
-func (u *User) GetUserEmail() string {
+func (u *User) GetEmail() string {
 	return u.Email
 }
-func (u *User) GetUserRole() string {
+func (u *User) GetRole() string {
 	return u.Role.String()
 }
 func (User) TableName() string { // User se tro toi bang users trong database

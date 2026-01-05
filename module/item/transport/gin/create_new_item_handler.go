@@ -1,13 +1,14 @@
 package ginitem
 
 import (
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
 	"todolist/common"
 	"todolist/module/item/biz"
 	"todolist/module/item/model"
 	"todolist/module/item/storage"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func CreateItem(db *gorm.DB) func(ctx *gin.Context) {
@@ -20,6 +21,8 @@ func CreateItem(db *gorm.DB) func(ctx *gin.Context) {
 			})
 			return
 		}
+		requester := c.MustGet(common.CurrentUser).(common.Requester)
+		itemData.UserId = requester.GetUserId()
 		store := storage.NewSQLStore(db)
 		business := biz.NewCreateItemBiz(store)
 

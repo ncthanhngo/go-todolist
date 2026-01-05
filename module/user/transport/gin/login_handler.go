@@ -5,19 +5,18 @@ import (
 	"gorm.io/gorm"
 	"net/http"
 	"todolist/common"
-	"todolist/component/tokenprovider/jwt"
+	"todolist/component/tokenprovider"
 	biz2 "todolist/module/user/biz"
 	"todolist/module/user/model"
 	"todolist/module/user/storage"
 )
 
-func Login(db *gorm.DB) gin.HandlerFunc {
+func Login(db *gorm.DB, tokenProvider tokenprovider.Provider) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var loginUerData model.UserLogin
 		if err := c.ShouldBind(&loginUerData); err != nil {
 			panic(common.ErrInvalidRequest(err))
 		}
-		tokenProvider := jwt.NewTokenJWTProvider("jwt", "ncthanh@999") //truyen bien moi truong vao
 		store := storage.NewSQLStore(db)
 		bcypt := common.NewBcryptHasher(10)
 

@@ -17,6 +17,7 @@ const (
 
 type TodoItem struct {
 	common.SQLModel
+	UserId      int           `json:"user_id" gorm:"column:user_id;not null"`
 	Title       string        `json:"title" gorm:"column:title;"`
 	Description string        `json:"description" gorm:"column:description;"`
 	Status      string        `json:"status" gorm:"column:status;"`
@@ -28,7 +29,8 @@ func (TodoItem) TableName() string {
 }
 
 type TodoItemCreation struct {
-	Id          int           `json:"id" gorm:"column:id;"`
+	Id          int           `json:"id" gorm:"column:id;primaryKey;autoIncrement"`
+	UserId      int           `json:"-" gorm:"column:user_id;"`
 	Title       string        `json:"title" gorm:"column:title;"`
 	Description string        `json:"description" gorm:"column:description;"`
 	Image       *common.Image `json:"image" gorm:"column:image"`

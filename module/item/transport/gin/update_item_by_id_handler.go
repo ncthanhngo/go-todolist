@@ -1,14 +1,15 @@
 package ginitem
 
 import (
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 	"todolist/common"
 	"todolist/module/item/biz"
 	"todolist/module/item/model"
 	"todolist/module/item/storage"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func UpdateItemByID(db *gorm.DB) func(ctx *gin.Context) {
@@ -28,8 +29,9 @@ func UpdateItemByID(db *gorm.DB) func(ctx *gin.Context) {
 			})
 			return
 		}
+		requester := c.MustGet(common.CurrentUser).(common.Requester)
 		store := storage.NewSQLStore(db)
-		business := biz.NewUpdateItemBiz(store)
+		business := biz.NewUpdateItemBiz(store, requester)
 		if err := business.UpdateItemById(c.Request.Context(), id, &updateData); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),

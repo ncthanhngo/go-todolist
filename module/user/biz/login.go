@@ -10,15 +10,15 @@ import (
 type LoginStorage interface {
 	FindUser(ctx context.Context, cond map[string]interface{}, moreInfo ...string) (*model.User, error)
 }
-type LoginBisiness struct {
+type LoginBusiness struct {
 	storeUser     LoginStorage
 	tokenProvider tokenprovider.Provider
 	hasher        Hasher
 	expiry        int
 }
 
-func NewLoginBusiness(storeUser LoginStorage, tokenprovider tokenprovider.Provider, hasher Hasher, expiry int) *LoginBisiness {
-	return &LoginBisiness{
+func NewLoginBusiness(storeUser LoginStorage, tokenprovider tokenprovider.Provider, hasher Hasher, expiry int) *LoginBusiness {
+	return &LoginBusiness{
 		storeUser:     storeUser,
 		tokenProvider: tokenprovider,
 		hasher:        hasher,
@@ -31,7 +31,7 @@ func NewLoginBusiness(storeUser LoginStorage, tokenprovider tokenprovider.Provid
 // 3. Provider: issue JWT token from client
 // 3.1 Access token and refresh token
 // 4. Return token(s)
-func (business *LoginBisiness) Login(ctx context.Context, data *model.UserLogin) (tokenprovider.Token, error) {
+func (business *LoginBusiness) Login(ctx context.Context, data *model.UserLogin) (tokenprovider.Token, error) {
 	user, err := business.storeUser.FindUser(ctx, map[string]interface{}{"email": data.Email})
 	if err != nil {
 		if err == common.RecordNotFound {

@@ -2,12 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"os"
+	"todolist/component/tokenprovider/jwt"
 	"todolist/db"
 	"todolist/middleware"
+	"todolist/module/user/storage"
 	ginuser "todolist/module/user/transport/gin"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 
 	//"gorm.io/driver/mysql"
 	//"gorm.io/gorm"
@@ -27,6 +30,10 @@ func main() {
 
 	db := db.ConnectDB()
 	db = db.Debug()
+	systemSecret := os.Getenv("SYSTEM_SECRET")
+	authStore := storage.NewSQLStore(db)
+	tokenProvider := jwt.NewTokenJWTProvider("jwt", systemSecret) //truyen bien moi truong vao
+	middlewareAuth := middleware.RequireAuth(authStore, tokenProvider)
 
 	// Chay Gin Framework
 	r := gin.Default()
@@ -43,18 +50,19 @@ func main() {
 	//Khai bao dang ky cho 5 API
 	{
 		v1.POST("/register", ginuser.Register(db))
-		v1.POST("/login", ginuser.Login(db))
+		v1.POST("/login", ginuser.Login(db, tokenProvider))
+		v1.GET("/profile", middlewareAuth, ginuser.Profile())
 		//v1.PUT("/upload", upload.Upload(db))
 		items := v1.Group("/items")
 		{
-			items.POST("", ginitem.CreateItem(db)) // ginitem la sua package trong handler tranh trung voi gin
+			items.POST("", middlewareAuth, ginitem.CreateItem(db)) // ginitem la sua package trong handler tranh trung voi gin
 			items.GET("", ginitem.ListItem(db))
 			items.GET("/:id", ginitem.GetItemById(db))
-			items.PATCH("/:id", ginitem.UpdateItemByID(db))
-			items.DELETE("/:id", ginitem.DeleteItemByID(db))
+			items.PATCH("/:id", middlewareAuth, ginitem.UpdateItemByID(db))
+			items.DELETE("/:id", middlewareAuth, ginitem.DeleteItemByID(db))
 		}
 	}
-	r.Run(":3000") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Run(":3001") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 
 }
 
